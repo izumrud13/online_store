@@ -3,6 +3,9 @@ from django.shortcuts import render
 # Create your views here.
 from django.shortcuts import render
 
+from catalog.models import Category
+
+
 # Create your views here.
 
 
@@ -24,3 +27,12 @@ def mailing(request):
         email = request.POST.get('email')
         print(email)
     return render(request, 'catalog/mailing.html')
+
+def category(request):
+    category_list = Category.objects.all()
+    context = {
+        'object_list': category_list
+    }
+    return render(request, 'catalog/category.html', context)
+
+
