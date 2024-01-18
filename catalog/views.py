@@ -3,7 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.shortcuts import render
 
-from catalog.models import Category
+from catalog.models import Category, Product
 
 
 # Create your views here.
@@ -35,4 +35,11 @@ def category(request):
     }
     return render(request, 'catalog/category.html', context)
 
+def product(request, pk):
+    product_item = Category.objects.get(pk=pk)
+    context = {
+        'object_list': Product.objects.filter(category_id=pk),
+        'title': {product_item.category_name}
+    }
+    return render(request, 'catalog/product.html', context)
 
