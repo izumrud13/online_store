@@ -2,15 +2,16 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render
+from django.urls import reverse_lazy, reverse
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 
 from catalog.models import Category, Product
 
 
 # Create your views here.
 
-
-def index(request):
-    return render(request, 'catalog/index.html')
+class IndexView(TemplateView):
+    template_name = 'catalog/index.html'
 
 
 def contacts(request):
@@ -28,18 +29,47 @@ def mailing(request):
         print(email)
     return render(request, 'catalog/mailing.html')
 
-def category(request):
-    category_list = Category.objects.all()
-    context = {
-        'object_list': category_list
-    }
-    return render(request, 'catalog/category.html', context)
 
-def product(request, pk):
-    product_item = Category.objects.get(pk=pk)
-    context = {
-        'object_list': Product.objects.filter(category_id=pk),
-        'title': {product_item.category_name}
+class CategoryListView(ListView):
+    model = Category
+    extra_context = {
+        'title': 'Категории товаров'
     }
-    return render(request, 'catalog/product.html', context)
+
+
+class ProductListView(ListView):
+    model = Product
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(category_id=self.kwargs.get('pk'))
+        return queryset
+
+    # def get_context_data(self, *args, **kwargs):
+    #     context_data = super().get_context_data(*args, **kwargs)
+    #
+    #     product_item = Product.object.get(pk=self.kwargs.get("pk"))
+    #     context_data['product_pk'] = product_item.pk
+    #
+    #
+    #     return context_data
+
+
+class ProductCreateView(CreateView):
+    model = Product
+    fields = ('name', 'category', 'description', 'img', 'cost',)
+    success_url = reverse_lazy('catalog:category')
+
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    fields = ('name', 'category', 'description', 'img', 'cost',)
+    success_url = reverse_lazy('catalog:category')
+
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    success_url = reverse_lazy('catalog:category')
+
+
 
