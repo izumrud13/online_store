@@ -16,11 +16,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=150, verbose_name='Название')),
-                ('slug', models.CharField(max_length=150, verbose_name='Slug')),
+                ('slug', models.CharField(max_length=150, verbose_name='Slug', null=True, blank=True)),
                 ('content', models.TextField(blank=True, null=True, verbose_name='Содержимое')),
                 ('preview', models.ImageField(blank=True, null=True, upload_to='blog/', verbose_name='Изображение')),
                 ('first_date', models.DateTimeField(blank=True, null=True, verbose_name='Дата создания')),
-                ('sign_publications', models.BooleanField(default=True)),
+                ('sign_publications', models.BooleanField(default=True, verbose_name='Опубликовано')),
                 ('view_count', models.IntegerField(default=0, verbose_name='Количество просмотров')),
             ],
             options={

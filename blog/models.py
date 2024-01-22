@@ -8,11 +8,11 @@ NULLABLE = {
 
 class Blog(models.Model):
     title = models.CharField(max_length=150, verbose_name='Название')
-    slug = models.CharField(max_length=150, verbose_name='Slug')
+    slug = models.CharField(max_length=150, verbose_name='Slug', **NULLABLE)
     content = models.TextField(verbose_name='Содержимое', **NULLABLE)
     preview = models.ImageField(upload_to='blog/', verbose_name='Изображение', **NULLABLE)
     first_date = models.DateTimeField(verbose_name='Дата создания', **NULLABLE)
-    sign_publications = models.BooleanField(default=True)
+    sign_publications = models.BooleanField(default=True, verbose_name='Опубликовано')
     view_count = models.IntegerField(default=0, verbose_name='Количество просмотров')
 
     def __str__(self):

@@ -15,10 +15,14 @@
             </div>
             <div class="col-md-6 p-4 ps-md-0">
                 <h5 class="mt-0">Slug: {{ object.slug }}</h5>
-                <p>Текст: {{ object.text }}</p>
-                <p>Дата публикации: {{ object.creation_date }}</p>
+                <p>Текст: {{ object.content }}</p>
+                <p>Дата публикации: {{ object.first_date }}</p>
                 <a type="button" class="btn btn-primary" href="/blog/">К отзывам</a>
+                <div class="class-footer">
+                    Просмотры: {{ object.view_count }}
+                </div>
             </div>
+
         </div>
     </div>
 {% endblock %}
