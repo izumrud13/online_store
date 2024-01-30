@@ -22,7 +22,7 @@ class Category(models.Model):
         ordering = ('category_name',)
 
 class Product(models.Model):
-    name = models.CharField(max_length=50, verbose_name='Наименование')
+    name = models.CharField(max_length=50, verbose_name='Наименование', unique=True)
     description = models.TextField(verbose_name='Описание', **NULLABLE)
     img = models.ImageField(upload_to='product/', verbose_name='Изображение', **NULLABLE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
@@ -36,3 +36,17 @@ class Product(models.Model):
         verbose_name = 'товар'
         verbose_name_plural = 'товары'
         ordering = ('category',)
+
+
+class Version(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+    number = models.IntegerField(verbose_name='Номер версии')
+    name = models.CharField(max_length=100, verbose_name='Название версии')
+    sign = models.BooleanField(default=False, verbose_name='Текущая версия', **NULLABLE)
+
+    def __str__(self):
+        return f'Продукт {self.product} версии {self.number}'
+
+    class Meta:
+        verbose_name = 'Версия'
+        verbose_name_plural = 'Версии'
