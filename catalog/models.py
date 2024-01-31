@@ -1,11 +1,13 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 # Create your models here.
 NULLABLE = {
     'blank': True,
     'null': True,
 }
-
 
 
 class Category(models.Model):
@@ -20,6 +22,7 @@ class Category(models.Model):
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
         ordering = ('category_name',)
+
 
 class Product(models.Model):
     name = models.CharField(max_length=50, verbose_name='Наименование', unique=True)
@@ -39,10 +42,16 @@ class Product(models.Model):
 
 
 class Version(models.Model):
+    activity = [(True, 'Активно'),
+                (False, 'Неактивно')]
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
     number = models.IntegerField(verbose_name='Номер версии')
     name = models.CharField(max_length=100, verbose_name='Название версии')
     sign = models.BooleanField(default=False, verbose_name='Текущая версия', **NULLABLE)
+    active_version = models.BooleanField(verbose_name='Статус', choices=activity,
+                                         default=False)
+
+
 
     def __str__(self):
         return f'Продукт {self.product} версии {self.number}'
@@ -50,3 +59,9 @@ class Version(models.Model):
     class Meta:
         verbose_name = 'Версия'
         verbose_name_plural = 'Версии'
+
+@receiver(post_save, sender=Version)
+def set_current_version(sender, instance, **kwargs):
+    if instance.active_version:
+        Version.objects.filter(product=instance.product).exclude(pk=instance.pk).update(
+            active_version=False)

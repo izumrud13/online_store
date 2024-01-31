@@ -27,6 +27,11 @@
                             <div class="btn-group">
                                 <a href="{% url 'catalog:product_update' object.pk %}" class="btn btn-primary">Изменить</a>
                                 <a href="{% url 'catalog:product_delete' object.pk %}" class="btn btn-outline-danger float-right">Удалить</a>
+                                {% for version in object.version_set.all %}
+                                {% if version.active_version %}
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">В наличии {{ version.name_version }}</button></a>
+                                {% endif %}
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
