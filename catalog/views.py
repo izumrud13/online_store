@@ -67,8 +67,8 @@ class ProductUpdateView(UpdateView):
         self.object = super().get_object(queryset)
         if self.request.user.is_superuser:
             return self.object
-        if self.object != self.request.user:
-            raise Http404("Вы не зарегистрированы на сайте")
+        if self.object.author != self.request.user:
+            raise Http404("Вы не являетесь владельцем этого товара")
         return self.object
 
     def get_success_url(self):
@@ -106,8 +106,8 @@ class ProductDeleteView(DeleteView):
         self.object = super().get_object(queryset)
         if self.request.user.is_superuser:
             return self.object
-        if self.object != self.request.user:
-            raise Http404("Вы не зарегистрированы на сайте")
+        if self.object.author != self.request.user:
+            raise Http404("Вы не являетесь владельцем этого товара")
         return self.object
 
 

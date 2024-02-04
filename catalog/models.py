@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -31,6 +32,9 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
     cost = models.IntegerField(verbose_name='Цена')
     first_date = models.DateTimeField(verbose_name='Дата создания', **NULLABLE)
+
+    author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, verbose_name='Автор',
+                               **NULLABLE)
 
     def __str__(self):
         return f'{self.name} | {self.category} | {self.cost} руб.'
