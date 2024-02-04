@@ -1,5 +1,6 @@
 from django.forms import inlineformset_factory
-from django.shortcuts import render
+from django.http import Http404
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 from django.shortcuts import render
@@ -47,11 +48,7 @@ class ProductListView(ListView):
         queryset = queryset.filter(category_id=self.kwargs.get('pk'))
         return queryset
 
-    # def get_context_data(self, *args, **kwargs):
-    #     context = super().get_context_data(*args, **kwargs)
-    #     context['version'] = Version.objects.all()
-    #     context['title'] = 'Все товары'
-    #     return context
+
 
 
 class ProductCreateView(CreateView):
@@ -64,6 +61,15 @@ class ProductUpdateView(UpdateView):
     model = Product
     form_class = ProductForm
     # success_url = reverse_lazy('catalog:category')
+
+    def get_object(self, queryset=None):
+
+        self.object = super().get_object(queryset)
+        if self.request.user.is_superuser:
+            return self.object
+        if self.object != self.request.user:
+            raise Http404("Вы не зарегистрированы на сайте")
+        return self.object
 
     def get_success_url(self):
         return reverse('catalog:product_update', args=[self.kwargs.get('pk')])
@@ -89,9 +95,20 @@ class ProductUpdateView(UpdateView):
         return super().form_valid(form)
 
 
+
+
 class ProductDeleteView(DeleteView):
     model = Product
     success_url = reverse_lazy('catalog:category')
+
+    def get_object(self, queryset=None):
+
+        self.object = super().get_object(queryset)
+        if self.request.user.is_superuser:
+            return self.object
+        if self.object != self.request.user:
+            raise Http404("Вы не зарегистрированы на сайте")
+        return self.object
 
 
 
