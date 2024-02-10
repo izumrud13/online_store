@@ -36,10 +36,14 @@
                             <div class="btn-group">
                                 <a href="{% url 'blog:blog_view' object.pk %}"
                                    class="btn btn-success mb-5">Просмотреть</a>
+                                {% if perms.blog.change_product%}
                                 <a href="{% url 'blog:blog_edit' object.pk %}"
                                    class="btn btn-primary mb-5">Изменить</a>
+                                {% endif %}
+                                {% if perms.product.delete_product%}
                                 <a href="{% url 'blog:blog_delete' object.pk %}"
                                    class="btn btn-outline-danger mb-5 float-right">Удалить</a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

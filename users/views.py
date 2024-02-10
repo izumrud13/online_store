@@ -1,5 +1,6 @@
 import random
 
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail, EmailMultiAlternatives
@@ -65,9 +66,10 @@ class VerifyEmailView(View):
             return render(request, 'users/registration_failed.html')
 
 
-class ProfileView(UpdateView):
+class ProfileView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = User
     form_class = UserProfileForm
+    permission_required = 'users.delete_user'
     success_url = reverse_lazy('users:profile')
 
     def get_object(self, queryset=None):

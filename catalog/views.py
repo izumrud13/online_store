@@ -1,8 +1,7 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.forms import inlineformset_factory
 from django.http import Http404
-from django.shortcuts import render, get_object_or_404
 
-# Create your views here.
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
@@ -49,17 +48,18 @@ class ProductListView(ListView):
         return queryset
 
 
-
-
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
+    permission_required = 'catalog.add_product'
     success_url = reverse_lazy('catalog:category')
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
+    permission_required = 'catalog.change_product'
+
     # success_url = reverse_lazy('catalog:category')
 
     def get_object(self, queryset=None):
@@ -73,6 +73,7 @@ class ProductUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('catalog:product_update', args=[self.kwargs.get('pk')])
+
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         VersionFormset = inlineformset_factory(Product, Version, form=VersionForm, extra=1)
@@ -95,10 +96,9 @@ class ProductUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-
-
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Product
+    permission_required = 'catalog.delete_product'
     success_url = reverse_lazy('catalog:category')
 
     def get_object(self, queryset=None):
@@ -109,6 +109,3 @@ class ProductDeleteView(DeleteView):
         if self.object.author != self.request.user:
             raise Http404("Вы не являетесь владельцем этого товара")
         return self.object
-
-
-
