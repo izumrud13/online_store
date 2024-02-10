@@ -35,6 +35,7 @@ class Product(models.Model):
 
     author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, verbose_name='Автор',
                                **NULLABLE)
+    is_published = models.BooleanField(default=False, verbose_name='Опубликовано')
 
     def __str__(self):
         return f'{self.name} | {self.category} | {self.cost} руб.'

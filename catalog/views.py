@@ -1,13 +1,16 @@
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.cache import cache
 from django.forms import inlineformset_factory
 from django.http import Http404
 
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, DetailView
 
 from catalog.forms import ProductForm, VersionForm
 from catalog.models import Category, Product, Version
+from catalog.services import get_cached_category_for_product
 
 
 # Create your views here.
@@ -32,6 +35,17 @@ def mailing(request):
     return render(request, 'catalog/mailing.html')
 
 
+class ProductDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    model = Product
+    permission_required = 'catalog.view_product'
+    success_url = reverse_lazy('catalog:category')
+
+    # def get_context_data(self, **kwargs):
+    #     context_data = super().get_context_data(**kwargs)
+    #     context_data['category'] = get_cached_category_for_product(self.object.pk)
+    #     return context_data
+
+
 class CategoryListView(ListView):
     model = Category
     extra_context = {
@@ -53,6 +67,13 @@ class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
     form_class = ProductForm
     permission_required = 'catalog.add_product'
     success_url = reverse_lazy('catalog:category')
+
+    def form_valid(self, form):
+        """Добавление автора к товару"""
+        self.object = form.save()
+        self.object.author = self.request.user
+        self.object.save()
+        return super().form_valid(form)
 
 
 class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -96,16 +117,20 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
         return super().form_valid(form)
 
 
+
+
 class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Product
     permission_required = 'catalog.delete_product'
     success_url = reverse_lazy('catalog:category')
 
-    def get_object(self, queryset=None):
-
-        self.object = super().get_object(queryset)
-        if self.request.user.is_superuser:
-            return self.object
-        if self.object.author != self.request.user:
-            raise Http404("Вы не являетесь владельцем этого товара")
-        return self.object
+    def get_object(self, queryset=None, *args, **kwargs):
+        """
+        Функция получения объекта модели и проверка прав доступа
+        для удаления продукта
+        """
+        object_data = super().get_object(*args, **kwargs)
+        if self.request.user == object_data.author:
+            return object_data
+        else:
+            raise Http404('Вы не являетесь владельцем данного товара')
