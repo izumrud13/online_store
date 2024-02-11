@@ -27,12 +27,11 @@
                             <div class="btn-group">
                                 <a href="{% url 'catalog:product_view' object.pk %}" class="btn btn-primary">Информация</a>
 
-                                    <a href="{% url 'catalog:product_update' object.pk %}" class="btn btn-primary">Изменить</a>
-
-                                    <a href="{% url 'catalog:product_delete' object.pk %}" class="btn btn-outline-danger float-right">Удалить</a>
-
+                                        <a href="{% url 'catalog:product_update' object.pk %}" class="btn btn-primary">Изменить</a>
+                                        {% if perms.catalog.product_delete %}
+                                        <a href="{% url 'catalog:product_delete' object.pk %}" class="btn btn-outline-danger float-right">Удалить</a>
+                                        {% endif %}
                                 {% for version in object.version_set.all %}
-
                                     <button type="button" class="btn btn-sm btn-outline-secondary">В наличии {{ version.name_version }}</button></a>
 
                                 {% endfor %}

@@ -1,5 +1,6 @@
 import random
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -66,7 +67,7 @@ class VerifyEmailView(View):
             return render(request, 'users/registration_failed.html')
 
 
-class ProfileView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class ProfileView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = UserProfileForm
     permission_required = 'users.delete_user'
@@ -75,7 +76,7 @@ class ProfileView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
-
+@login_required
 def generate_new_password(request):
     new_password = ''.join([str(random.randint(0, 9)) for _ in range(12)])
     send_mail(

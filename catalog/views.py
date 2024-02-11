@@ -86,7 +86,7 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
     def get_object(self, queryset=None):
 
         self.object = super().get_object(queryset)
-        if self.request.user.is_superuser:
+        if self.request.user.is_superuser or self.request.user.is_staff:
             return self.object
         if self.object.author != self.request.user:
             raise Http404("Вы не являетесь владельцем этого товара")
@@ -130,7 +130,7 @@ class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
         для удаления продукта
         """
         object_data = super().get_object(*args, **kwargs)
-        if self.request.user == object_data.author:
+        if self.request.user == object_data.author or self.request.user.is_superuser:
             return object_data
         else:
             raise Http404('Вы не являетесь владельцем данного товара')
