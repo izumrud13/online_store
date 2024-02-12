@@ -16,5 +16,5 @@ urlpatterns = [
     path('product/create/',  never_cache(ProductCreateView.as_view()), name='product_create'),
     path('product/update/<int:pk>/',  never_cache(ProductUpdateView.as_view()), name='product_update'),
     path('product/delete/<int:pk>/',  never_cache(ProductDeleteView.as_view()), name='product_delete'),
-    path('view/<int:pk>/', ProductDetailView.as_view(), name='product_view')
+    path('view/<int:pk>/', cache_page(60)(ProductDetailView.as_view()), name='product_view')
 ]

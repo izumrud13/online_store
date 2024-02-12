@@ -40,10 +40,10 @@ class ProductDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
     permission_required = 'catalog.view_product'
     success_url = reverse_lazy('catalog:category')
 
-    # def get_context_data(self, **kwargs):
-    #     context_data = super().get_context_data(**kwargs)
-    #     context_data['category'] = get_cached_category_for_product(self.object.pk)
-    #     return context_data
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['category'] = get_cached_category_for_product(self.object.pk)
+        return context_data
 
 
 class CategoryListView(ListView):
